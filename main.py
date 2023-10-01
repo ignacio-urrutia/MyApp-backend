@@ -6,7 +6,8 @@ from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
 cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
+
+# app.config['CORS_HEADERS'] = 'Content-Type'
 api = Api(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 db = SQLAlchemy(app)
@@ -27,4 +28,4 @@ api.add_resource(GroupChatAddUser, "/groupchats/<int:group_chat_id>/adduser")
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host = '0.0.0.0', debug=True)
