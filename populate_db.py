@@ -5,8 +5,8 @@ from models.GroupChatModel import GroupChat
 def create_sample_users():
     # Create a list of sample users
     users = [
-        User(name="John Doe", email="john.doe@example.com"),
-        User(name="Jane Doe", email="jane.doe@example.com"),
+        User(name="John Doe", email="john.doe@example.com", password="password"),
+        User(name="Jane Doe", email="jane.doe@example.com", password="password"),
         # Add more users as needed
     ]
 

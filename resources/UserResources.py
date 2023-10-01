@@ -14,6 +14,7 @@ user_fields = {
 user_put_args = reqparse.RequestParser()
 user_put_args.add_argument("name", type=str, help="Name required", required=True)
 user_put_args.add_argument("email", type=str, help="Email required", required=True)
+user_put_args.add_argument("password", type=str, help="Password required", required=True)
 user_put_args.add_argument("last_latitude", type=float, help="Last latitude of the user")
 user_put_args.add_argument("last_longitude", type=float, help="Last longitude of the user")
 
@@ -22,6 +23,10 @@ user_update_args.add_argument("name", type=str, help="Name of the user")
 user_update_args.add_argument("email", type=str, help="Email of the user")
 user_update_args.add_argument("last_latitude", type=float, help="Last latitude of the user")
 user_update_args.add_argument("last_longitude", type=float, help="Last longitude of the user")
+
+user_login_args = reqparse.RequestParser()
+user_login_args.add_argument("email", type=str, help="Email of the user", required=True)
+user_login_args.add_argument("password", type=str, help="Password of the user", required=True)
 
 
 class UserAll(Resource):
@@ -34,7 +39,7 @@ class UserAll(Resource):
     def post(self):
         args = user_put_args.parse_args()
 
-        user = User(name=args["name"], email=args["email"])
+        user = User(name=args["name"], email=args["email"], password=args["password"])
         db.session.add(user)
         try:
             db.session.commit()
@@ -88,3 +93,14 @@ class UserById(Resource):
             abort(500, message="Internal Server Error")
 
         return result, 204
+
+class UserLogIn(Resource):
+    @marshal_with(user_fields)
+    def post(self):
+        args = user_login_args.parse_args()
+        result = User.query.filter_by(email=args["email"]).first()
+        if not result:
+            abort(404, message="Could not find user with that email...")
+        if result.password != args["password"]:
+            abort(404, message="Incorrect password...")
+        return result, 200

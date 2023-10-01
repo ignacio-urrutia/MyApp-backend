@@ -7,13 +7,14 @@ api = Api(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 db = SQLAlchemy(app)
 
-from resources.UserResources import UserAll, UserById
+from resources.UserResources import UserAll, UserById, UserLogIn
 from resources.GroupChatResources import GroupChatAll, GroupChatById, GroupChatAddUser
 
 # Routes
 # Users
 api.add_resource(UserAll, "/users/")   
 api.add_resource(UserById, "/users/<int:user_id>")
+api.add_resource(UserLogIn, "/users/login")
 
 # Group Chats
 api.add_resource(GroupChatAll, "/groupchats/")
