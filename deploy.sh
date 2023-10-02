@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Navigate to your project directory
-cd /path/to/your/repo
-
-# Activate the virtual environment
-source myenv/bin/activate
-
 # Pull the latest code from your GitHub repo
 git pull
 
