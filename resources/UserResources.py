@@ -2,6 +2,11 @@ from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 from models.UserModel import User
 from models.GroupChatModel import GroupChat
 from application import db
+from flask import g
+from flask_httpauth import HTTPBasicAuth
+from flask import request
+
+auth = HTTPBasicAuth()
 
 user_fields = {
     "id": fields.Integer,
@@ -9,6 +14,11 @@ user_fields = {
     "email": fields.String,
     "last_latitude": fields.Float,
     "last_longitude": fields.Float,
+}
+
+token_fields = {
+    'token': fields.String,
+    'duration': fields.Integer
 }
 
 user_put_args = reqparse.RequestParser()
@@ -39,7 +49,8 @@ class UserAll(Resource):
     def post(self):
         args = user_put_args.parse_args()
 
-        user = User(name=args["name"], email=args["email"], password=args["password"])
+        user = User(name=args["name"], email=args["email"])
+        user.hash_password(args["password"])
         db.session.add(user)
         try:
             db.session.commit()
@@ -93,14 +104,37 @@ class UserById(Resource):
             abort(500, message="Internal Server Error")
 
         return result, 204
+    
+@auth.verify_password
+def verify_password(username_or_token, password):
+    # Attempt to extract the token from the Authorization header
+    auth_header = request.headers.get('Authorization')
+    if auth_header and auth_header.startswith('Bearer '):
+        token = auth_header.split(" ")[1]
+        user = User.verify_auth_token(token)
+        if user:
+            g.user = user
+            return True
+        return False
+
+    # If no Authorization header or token verification failed,
+    # fall back to username and password verification
+    user = User.query.filter_by(email=username_or_token).first()
+    if user and user.verify_password(password):
+        g.user = user
+        return True
+    return False
+
 
 class UserLogIn(Resource):
-    @marshal_with(user_fields)
+    @marshal_with(token_fields)
     def post(self):
         args = user_login_args.parse_args()
-        result = User.query.filter_by(email=args["email"]).first()
-        if not result:
+        user = User.query.filter_by(email=args["email"]).first()
+        if not user:
             abort(404, message="Could not find user with that email...")
-        if result.password != args["password"]:
+        if not user.verify_password(args["password"]):
             abort(404, message="Incorrect password...")
-        return result, 200
+        token = user.generate_auth_token(600)
+        return { 'token': token, 'duration': 600 }, 200  # Removed decode('ascii')
+

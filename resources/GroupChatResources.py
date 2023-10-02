@@ -3,6 +3,7 @@ from models.GroupChatModel import GroupChat
 from models.UserModel import User
 from resources.UserResources import user_fields
 from application import db
+from .UserResources import auth
 
 group_chat_fields = {
     "id": fields.Integer,
@@ -74,6 +75,7 @@ class GroupChatAll(Resource):
         return group_chat, 201
 
 class GroupChatById(Resource):
+    @auth.login_required
     @marshal_with(group_chat_fields)
     def get(self, group_chat_id):
         result = GroupChat.query.filter_by(id=group_chat_id).first()

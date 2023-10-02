@@ -2,14 +2,15 @@ from flask import Flask, request, jsonify
 from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
-
+from flask_httpauth import HTTPBasicAuth
 
 application = Flask(__name__)
-cors = CORS(application)
+cors = CORS(application, resources={r"/*": {"origins": "*", "supports_credentials": True}})
 
 # app.config['CORS_HEADERS'] = 'Content-Type'
 api = Api(application)
 application.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
+application.config['SECRET_KEY'] = 'your_secret_key_here'
 db = SQLAlchemy(application)
 
 from resources.UserResources import UserAll, UserById, UserLogIn
