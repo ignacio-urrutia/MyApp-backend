@@ -114,3 +114,9 @@ Also, you can send requests to the server to populate the database manually.
 ## How it will work
 1. User send its location
 2. Server checks all groups where the user bellong and if the user is inside the group's area, return the information about the group
+
+## Connect to the EC2 instance
+1. Connect to the instance:
+```bash
+ssh -i BackendKeys/area-chat-keys.pem ec2-user@ec2-3-138-178-239.us-east-2.compute.amazonaws.com
+``` 

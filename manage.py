@@ -1,4 +1,4 @@
-from main import db
+from application import db
 import click
 from flask import Flask
 

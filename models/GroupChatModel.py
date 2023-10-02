@@ -1,4 +1,4 @@
-from main import db
+from application import db
 from models.UserModel import usersGroupChats
 
 class GroupChat(db.Model):

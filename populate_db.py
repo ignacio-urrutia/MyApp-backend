@@ -1,4 +1,4 @@
-from main import db, app
+from application import db, app
 from models.UserModel import User
 from models.GroupChatModel import GroupChat
 

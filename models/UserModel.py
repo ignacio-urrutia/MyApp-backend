@@ -1,4 +1,4 @@
-from main import db
+from application import db
 
 usersGroupChats = db.Table("users_group_chats",
     db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),

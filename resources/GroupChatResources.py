@@ -2,7 +2,7 @@ from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 from models.GroupChatModel import GroupChat
 from models.UserModel import User
 from resources.UserResources import user_fields
-from main import db
+from application import db
 
 group_chat_fields = {
     "id": fields.Integer,
