@@ -83,6 +83,13 @@ Also, you can send requests to the server to populate the database manually.
 
 - Deletes a specific user by user ID.
 
+#### 6. **POST** `/users/login`
+
+- Logs in a user.
+- **Body Parameters:**
+  - `email`: string (required)
+  - `password`: string (required)
+
 ### Group Chat Endpoints
 
 #### 1. **GET** `/groupchats`
