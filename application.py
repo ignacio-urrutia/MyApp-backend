@@ -14,7 +14,9 @@ application.config['SECRET_KEY'] = 'your_secret_key_here'
 db = SQLAlchemy(application)
 
 from resources.UserResources import UserAll, UserById, UserLogIn
-from resources.GroupChatResources import GroupChatAll, GroupChatById, GroupChatAddUser
+from resources.GroupChatResources import GroupChatAll, GroupChatById, GroupChatAddUser, GroupChatMessages, RecentMessagesResource, OlderMessagesResource
+from resources.MessageResources import MessageResource
+from resources.MultimediaResources import MultimediaResource
 
 # Routes
 # Users
@@ -26,6 +28,15 @@ api.add_resource(UserLogIn, "/users/login")
 api.add_resource(GroupChatAll, "/groupchats/")
 api.add_resource(GroupChatById, "/groupchats/<int:group_chat_id>")
 api.add_resource(GroupChatAddUser, "/groupchats/<int:group_chat_id>/adduser")
+api.add_resource(GroupChatMessages, '/groupchats/<int:group_chat_id>/messages')
+api.add_resource(RecentMessagesResource, '/groupchats/<int:group_chat_id>/recent-messages')
+api.add_resource(OlderMessagesResource, '/groupchats/<int:group_chat_id>/older-messages/<int:earliest_message_id>')
+
+# Messages
+api.add_resource(MessageResource, '/messages/')
+
+# Multimedia
+api.add_resource(MultimediaResource, '/messages/<int:message_id>/multimedia')
 
 
 if __name__ == '__main__':
