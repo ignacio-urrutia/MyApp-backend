@@ -118,6 +118,25 @@ Also, you can send requests to the server to populate the database manually.
 - **Body Parameters:**
   - `user_id`: integer (required)
 
+#### 5. **POST** `/groupchats/<int:group_chat_id>/messages`
+- Posts a new message to a specific group chat by group chat ID.
+- **Body Parameters:**
+  - `content`: string (required)
+  - `user_id`: integer (required)
+  - `multimedia`: array of objects (optional, each object should have `type` and `file_url` fields)
+
+#### 6. **GET** `/groupchats/<int:group_chat_id>/recent-messages`
+- Retrieves the 20 most recent messages from a specific group chat by group chat ID.
+
+#### 7. **GET** `/groupchats/<int:group_chat_id>/older-messages/<int:earliest_message_id>`
+- Retrieves up to 20 messages older than a specified message ID from a specific group chat by group chat ID.
+
+### Multimedia Endpoints
+
+#### 1. **GET** `/messages/<int:message_id>/multimedia`
+- Retrieves multimedia items associated with a specific message by message ID.
+
+
 ## How it will work
 1. User send its location
 2. Server checks all groups where the user bellong and if the user is inside the group's area, return the information about the group

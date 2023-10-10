@@ -1,5 +1,6 @@
 from application import db
 from models.UserModel import usersGroupChats
+from models.MessageModel import Message
 
 class GroupChat(db.Model):
 
@@ -12,6 +13,20 @@ class GroupChat(db.Model):
     # users = db.relationship("User", secondary=usersGroupChats, lazy="subquery")
     description = db.Column(db.Text, nullable=True)
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    messages = db.relationship('Message', backref='group_chat', lazy=True)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'content': self.name,
+            'north_boundary': self.north_boundary,
+            'south_boundary': self.south_boundary,
+            'east_boundary': self.east_boundary,
+            'west_boundary': self.west_boundary,
+            'description': self.description,
+            'owner_id': self.owner_id,
+            'messages': [item.serialize() for item in self.messages]
+        }
 
     def __repr__(self):
         return f"GroupChat(name={self.name}, north_boundary={self.north_boundary}, south_boundary={self.south_boundary}, east_boundary={self.east_boundary}, west_boundary={self.west_boundary})"
