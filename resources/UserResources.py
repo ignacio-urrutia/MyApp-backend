@@ -18,7 +18,8 @@ user_fields = {
 
 token_fields = {
     'token': fields.String,
-    'duration': fields.Integer
+    'duration': fields.Integer,
+    'user_id': fields.Integer
 }
 
 user_put_args = reqparse.RequestParser()
@@ -188,7 +189,7 @@ class UserLogIn(Resource):
         if not user.verify_password(args["password"]):
             abort(404, message="Incorrect password...")
         token = user.generate_auth_token(tokenDuration)
-        return { 'token': token, 'duration': tokenDuration }, 200
+        return { 'token': token, 'duration': tokenDuration, 'user_id': user.id }, 200
     
 class UserChatRooms(Resource):
     @auth.login_required
