@@ -43,11 +43,15 @@ class UserAll(Resource):
     @marshal_with(user_fields)
     def get(self):
         result = User.query.all()
-        return result
+        return result, 200
     
     @marshal_with(user_fields)
     def post(self):
         args = user_put_args.parse_args()
+
+        existing_user = User.query.filter_by(email=args['email']).first()
+        if existing_user:
+            abort(409, message="Whoa there, cowboy! That email already exists.")
 
         user = User(name=args["name"], email=args["email"])
         user.hash_password(args["password"])
@@ -105,6 +109,54 @@ class UserById(Resource):
 
         return result, 204
     
+class UserByToken(Resource):
+    @marshal_with(user_fields)
+    @auth.login_required
+    def get(self):
+        result = User.query.filter_by(id=g.user.id).first()
+        if not result:
+            abort(404, message="Could not find user with that id...")
+        return result, 200
+
+    @marshal_with(user_fields)
+    @auth.login_required
+    def patch(self):
+        args = user_update_args.parse_args()
+        result = User.query.filter_by(id=g.user.id).first()
+        if not result:
+            abort(404, message="User doesn't exist, cannot update...")
+        if args["name"]:
+            result.name = args["name"]
+        if args["email"]:
+            result.email = args["email"]
+        if args["last_latitude"]:
+            result.last_latitude = args["last_latitude"]
+        if args["last_longitude"]:
+            result.last_longitude = args["last_longitude"]
+
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            abort(500, message="Internal Server Error")
+
+        return result, 204
+    
+    @marshal_with(user_fields)
+    @auth.login_required
+    def delete(self):
+        result = User.query.filter_by(id=g.user.id).first()
+        if not result:
+            abort(404, message="Could not find user with that id...")
+        db.session.delete(result)
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            abort(500, message="Internal Server Error")
+
+        return result, 204
+    
 @auth.verify_password
 def verify_password(username_or_token, password):
     # Attempt to extract the token from the Authorization header
@@ -128,19 +180,20 @@ def verify_password(username_or_token, password):
 class UserLogIn(Resource):
     @marshal_with(token_fields)
     def post(self):
+        tokenDuration = 600
         args = user_login_args.parse_args()
         user = User.query.filter_by(email=args["email"]).first()
         if not user:
             abort(404, message="Could not find user with that email...")
         if not user.verify_password(args["password"]):
             abort(404, message="Incorrect password...")
-        token = user.generate_auth_token(600)
-        return { 'token': token, 'duration': 600 }, 200  # Removed decode('ascii')
+        token = user.generate_auth_token(tokenDuration)
+        return { 'token': token, 'duration': tokenDuration }, 200
     
 class UserChatRooms(Resource):
     @auth.login_required
-    def get(self, user_id):
-        result = User.query.filter_by(id=user_id).first()
+    def get(self):
+        result = User.query.filter_by(id=g.user.id).first()
         if not result:
             abort(404, message="Could not find user with that id...")
         # Return the serialized version of the group chats
