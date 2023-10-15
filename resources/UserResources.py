@@ -45,7 +45,8 @@ class UserAll(Resource):
     def get(self):
         result = User.query.all()
         return result, 200
-    
+
+class SignUp(Resource):
     @marshal_with(user_fields)
     def post(self):
         args = user_put_args.parse_args()
