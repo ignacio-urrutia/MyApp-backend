@@ -25,7 +25,7 @@ class GroupChat(db.Model):
             'west_boundary': self.west_boundary,
             'description': self.description,
             'owner_id': self.owner_id,
-            'messages': [item.serialize() for item in self.messages]
+            'last_message': self.messages[-1].serialize() if len(self.messages) > 0 else None
         }
 
     def __repr__(self):

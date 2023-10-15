@@ -15,7 +15,7 @@ application.config['SECRET_KEY'] = 'your_secret_key_here'
 db = SQLAlchemy(application)
 migrate = Migrate(application, db)
 
-from resources.UserResources import UserAll, UserById, UserLogIn
+from resources.UserResources import UserAll, UserById, UserLogIn, UserChatRooms
 from resources.GroupChatResources import GroupChatAll, GroupChatById, GroupChatAddUser, GroupChatMessages, RecentMessagesResource, OlderMessagesResource
 from resources.MessageResources import MessageResource
 from resources.MultimediaResources import MultimediaResource
@@ -25,6 +25,7 @@ from resources.MultimediaResources import MultimediaResource
 api.add_resource(UserAll, "/users/")   
 api.add_resource(UserById, "/users/<int:user_id>")
 api.add_resource(UserLogIn, "/users/login")
+api. add_resource(UserChatRooms, "/users/<int:user_id>/chatrooms")
 
 # Group Chats
 api.add_resource(GroupChatAll, "/groupchats/")

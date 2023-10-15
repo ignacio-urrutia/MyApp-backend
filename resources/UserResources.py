@@ -125,7 +125,6 @@ def verify_password(username_or_token, password):
         return True
     return False
 
-
 class UserLogIn(Resource):
     @marshal_with(token_fields)
     def post(self):
@@ -137,4 +136,13 @@ class UserLogIn(Resource):
             abort(404, message="Incorrect password...")
         token = user.generate_auth_token(600)
         return { 'token': token, 'duration': 600 }, 200  # Removed decode('ascii')
+    
+class UserChatRooms(Resource):
+    @auth.login_required
+    def get(self, user_id):
+        result = User.query.filter_by(id=user_id).first()
+        if not result:
+            abort(404, message="Could not find user with that id...")
+        # Return the serialized version of the group chats
+        return [group_chat.serialize() for group_chat in result.group_chats], 200
 

@@ -63,6 +63,7 @@ Also, you can send requests to the server to populate the database manually.
 - **Body Parameters:**
   - `name`: string (required)
   - `email`: string (required)
+  - `password`: string (required)
   - `last_latitude`: float (optional)
   - `last_longitude`: float (optional)
 
