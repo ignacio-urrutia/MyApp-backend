@@ -34,6 +34,7 @@ user_update_args.add_argument("name", type=str, help="Name of the user")
 user_update_args.add_argument("email", type=str, help="Email of the user")
 user_update_args.add_argument("last_latitude", type=float, help="Last latitude of the user")
 user_update_args.add_argument("last_longitude", type=float, help="Last longitude of the user")
+user_update_args.add_argument("password", type=str, help="Password of the user")
 
 user_login_args = reqparse.RequestParser()
 user_login_args.add_argument("email", type=str, help="Email of the user", required=True)
@@ -135,6 +136,8 @@ class UserByToken(Resource):
             result.last_latitude = args["last_latitude"]
         if args["last_longitude"]:
             result.last_longitude = args["last_longitude"]
+        if args["password"]:
+            result.hash_password(args["password"])
 
         try:
             db.session.commit()
