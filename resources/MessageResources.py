@@ -1,14 +1,7 @@
 from flask_restful import Resource, reqparse, fields, marshal_with
 from models.MessageModel import Message
 from application import db
-
-message_fields = {
-    'id': fields.Integer,
-    'content': fields.String,
-    'timestamp': fields.DateTime,
-    'user_id': fields.Integer,
-    'group_chat_id': fields.Integer
-}
+from resourcesFields import message_fields
 
 message_parser = reqparse.RequestParser()
 message_parser.add_argument('content', type=str, required=True, help="Message content is required")

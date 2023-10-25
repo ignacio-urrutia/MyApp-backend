@@ -7,23 +7,9 @@ from models.GroupChatModel import GroupChat
 from models.UserModel import User
 from models.MessageModel import Message
 from models.MultimediaModel import Multimedia
-from resources.UserResources import user_fields
 from application import db
 from .UserResources import auth
-from .MessageResources import message_fields
-
-group_chat_fields = {
-    "id": fields.Integer,
-    "name": fields.String,
-    "north_boundary": fields.Float,
-    "south_boundary": fields.Float,
-    "east_boundary": fields.Float,
-    "west_boundary": fields.Float,
-    "users": fields.List(fields.Nested(user_fields)),
-    "description": fields.String,
-    "owner_id": fields.Integer,
-    "messages": fields.List(fields.Nested(message_fields))
-}
+from resourcesFields import group_chat_fields, message_fields
 
 group_chat_post_args = reqparse.RequestParser()
 group_chat_post_args.add_argument("name", type=str, help="Name required", required=True)

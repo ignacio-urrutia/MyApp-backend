@@ -41,3 +41,21 @@ class User(db.Model):
 
     def __repr__(self):
         return f"User(name={self.name}, email={self.email})"
+    
+    def serialize(self, include_group_chats=True):
+        if include_group_chats:
+            return {
+                'id': self.id,
+                'name': self.name,
+                'email': self.email,
+                'last_latitude': self.last_latitude,
+                'last_longitude': self.last_longitude,
+                'group_chats': [group_chat.serialize() for group_chat in self.group_chats]
+            }
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'last_latitude': self.last_latitude,
+            'last_longitude': self.last_longitude
+        }

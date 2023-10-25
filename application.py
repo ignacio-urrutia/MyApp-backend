@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_cors import CORS, cross_origin
 from flask_httpauth import HTTPBasicAuth
 
+
 application = Flask(__name__)
 cors = CORS(application, resources={r"/*": {"origins": "*", "supports_credentials": True}})
 
@@ -14,6 +15,7 @@ application.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 application.config['SECRET_KEY'] = 'your_secret_key_here'
 db = SQLAlchemy(application)
 migrate = Migrate(application, db)
+
 
 from resources.UserResources import UserAll, UserById, UserByToken, UserLogIn, UserChatRooms, SignUp
 from resources.GroupChatResources import GroupChatAll, GroupChatById, GroupChatAddUser, GroupChatMessages, RecentMessagesResource, OlderMessagesResource

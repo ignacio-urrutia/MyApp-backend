@@ -18,14 +18,15 @@ class GroupChat(db.Model):
     def serialize(self):
         return {
             'id': self.id,
-            'content': self.name,
+            'name': self.name,
             'north_boundary': self.north_boundary,
             'south_boundary': self.south_boundary,
             'east_boundary': self.east_boundary,
             'west_boundary': self.west_boundary,
             'description': self.description,
             'owner_id': self.owner_id,
-            'last_message': self.messages[-1].serialize() if len(self.messages) > 0 else None
+            'last_message': self.messages[-1].serialize() if len(self.messages) > 0 else None,
+            'users': [user.serialize(include_group_chats=False) for user in self.users]
         }
 
     def __repr__(self):

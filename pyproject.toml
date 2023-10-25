@@ -16,6 +16,7 @@ flask-cors = "^4.0.0"
 flask-httpauth = "^4.8.0"
 pyjwt = "^2.8.0"
 flask-migrate = "^4.0.5"
+boto3 = "^1.28.68"
 
 
 [build-system]

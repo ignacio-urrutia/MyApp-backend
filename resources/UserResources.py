@@ -1,26 +1,14 @@
-from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
+from flask_restful import Api, Resource, reqparse, abort, marshal_with
 from models.UserModel import User
 from models.GroupChatModel import GroupChat
 from application import db
 from flask import g
 from flask_httpauth import HTTPBasicAuth
 from flask import request
+from resourcesFields import user_fields, token_fields
 
 auth = HTTPBasicAuth()
 
-user_fields = {
-    "id": fields.Integer,
-    "name": fields.String,
-    "email": fields.String,
-    "last_latitude": fields.Float,
-    "last_longitude": fields.Float,
-}
-
-token_fields = {
-    'token': fields.String,
-    'duration': fields.Integer,
-    'user_id': fields.Integer
-}
 
 user_put_args = reqparse.RequestParser()
 user_put_args.add_argument("name", type=str, help="Name required", required=True)
@@ -119,7 +107,7 @@ class UserByToken(Resource):
         result = User.query.filter_by(id=g.user.id).first()
         if not result:
             abort(404, message="Could not find user with that id...")
-        return result, 200
+        return result.serialize(), 200
 
     @marshal_with(user_fields)
     @auth.login_required

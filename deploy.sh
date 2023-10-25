@@ -6,6 +6,9 @@ git pull
 # Install new dependencies if any
 poetry install
 
+# Store credentials in environment variables
+sh credentials.sh
+
 # Run database migrations if applicable
 # Uncomment the next line if you have a database
 poetry run flask db upgrade
