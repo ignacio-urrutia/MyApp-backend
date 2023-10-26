@@ -52,5 +52,5 @@ class FriendRequestResource(Resource):
     @auth.login_required
     def get(self):
         pending_requests = FriendRequest.query.filter_by(receiver_id=g.user.id, status="pending").all()
-        pending_list = [{"request_id": req.id, "sender_id": req.sender_id} for req in pending_requests]
-        return {"pending_requests": pending_list}, 200
+        return {"pending_requests": request.serialize() for request in pending_requests}, 200
+    
