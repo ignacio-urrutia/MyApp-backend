@@ -220,6 +220,7 @@ class FriendResource(Resource):
             abort(404, message="Could not find the friend with that ID.")
 
         g.user.friends.remove(friend)
+        friend.friends.remove(g.user)
         db.session.commit()
 
         return {"message": "Friend removed successfully"}, 200
