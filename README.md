@@ -137,6 +137,26 @@ Also, you can send requests to the server to populate the database manually.
 #### 1. **GET** `/messages/<int:message_id>/multimedia`
 - Retrieves multimedia items associated with a specific message by message ID.
 
+### Friend Request Endpoints
+
+#### 1. **POST** `/friend_requests`
+
+- Sends a new friend request.
+- **Body Parameters:**
+  - `receiver_id`: integer (required)
+
+#### 2. **PUT** `/friend_requests`
+
+- Updates the status of a received friend request.
+- **Body Parameters:**
+  - `request_id`: integer (required)
+  - `status`: string (required, either 'accepted' or 'declined')
+
+#### 3. **GET** `/friend_requests`
+
+- Retrieves a list of all pending friend requests where the user is the receiver.
+
+
 
 ## How it will work
 1. User send its location

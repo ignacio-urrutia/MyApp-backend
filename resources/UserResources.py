@@ -1,14 +1,13 @@
 from flask_restful import Api, Resource, reqparse, abort, marshal_with
-from models.UserModel import User
-from models.GroupChatModel import GroupChat
-from application import db
-from flask import g
+from flask import g, request
 from flask_httpauth import HTTPBasicAuth
-from flask import request
+
+from application import db
 from resourcesFields import user_fields, token_fields
+from models.GroupChatModel import GroupChat
+from models.UserModel import User
 
 auth = HTTPBasicAuth()
-
 
 user_put_args = reqparse.RequestParser()
 user_put_args.add_argument("name", type=str, help="Name required", required=True)
@@ -191,4 +190,42 @@ class UserChatRooms(Resource):
             abort(404, message="Could not find user with that id...")
         # Return the serialized version of the group chats
         return [group_chat.serialize() for group_chat in result.group_chats], 200
+
+class FriendResource(Resource):
+    @auth.login_required
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("friend_id", type=int, required=True, help="Friend ID is required")
+        args = parser.parse_args()
+
+        friend = User.query.filter_by(id=args["friend_id"]).first()
+
+        if not friend:
+            abort(404, message="Could not find the friend with that ID.")
+
+        g.user.friends.append(friend)
+        db.session.commit()
+
+        return {"message": "Friend added successfully"}, 201
+
+    @auth.login_required
+    def delete(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("friend_id", type=int, required=True, help="Friend ID is required")
+        args = parser.parse_args()
+
+        friend = User.query.filter_by(id=args["friend_id"]).first()
+
+        if not friend:
+            abort(404, message="Could not find the friend with that ID.")
+
+        g.user.friends.remove(friend)
+        db.session.commit()
+
+        return {"message": "Friend removed successfully"}, 200
+
+    @auth.login_required
+    def get(self):
+        friend_list = [friend.id for friend in g.user.friends.all()]
+        return {"friends": friend_list}, 200
 

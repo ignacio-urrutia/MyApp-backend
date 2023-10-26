@@ -35,7 +35,16 @@ user_fields = {
     "email": fields.String,
     "last_latitude": fields.Float,
     "last_longitude": fields.Float,
-    "group_chats": fields.List(fields.Nested(group_chat_fields))
+    "group_chats": fields.List(fields.Nested(group_chat_fields)),
+    "friends": fields.List(fields.Nested(
+        {
+            "id": fields.Integer,
+            "name": fields.String,
+            "email": fields.String,
+            "last_latitude": fields.Float,
+            "last_longitude": fields.Float
+        }
+    ))
 }
 
 token_fields = {
