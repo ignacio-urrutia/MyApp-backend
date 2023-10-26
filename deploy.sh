@@ -7,7 +7,7 @@ git pull
 poetry install
 
 # Store credentials in environment variables
-sh credentials.sh
+source credentials.sh
 
 # Run database migrations if applicable
 # Uncomment the next line if you have a database
