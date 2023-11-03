@@ -182,7 +182,7 @@ class RecentMessagesResource(Resource):
             # multimedia_items = Multimedia.query.filter_by(message_id=message.id).all()
             # Serializing the message and multimedia data
             message_data = message.serialize()
-            message_data['multimedia'] = [item.serialize() for item in multimedia_items]
+            # message_data['multimedia'] = [item.serialize() for item in multimedia_items]
             response.append(message_data)
         return response, 200
 
