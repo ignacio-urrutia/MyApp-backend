@@ -17,6 +17,15 @@ class FriendRequestResource(Resource):
         if not receiver:
             abort(404, message="Could not find the receiver with that ID.")
 
+        # Check if the users are already friends
+        if receiver in g.user.friends:
+            abort(400, message="You are already friends with this user.")
+
+        # Check if the users have a pending friend request
+        friend_request = FriendRequest.query.filter_by(sender_id=g.user.id, receiver_id=receiver.id, status="pending").first()
+        if friend_request:
+            abort(400, message="You already have a pending friend request with this user.")
+            
         friend_request = FriendRequest(sender_id=g.user.id, receiver_id=receiver.id)
         db.session.add(friend_request)
         db.session.commit()

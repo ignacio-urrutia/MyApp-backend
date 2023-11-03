@@ -91,6 +91,10 @@ Also, you can send requests to the server to populate the database manually.
   - `email`: string (required)
   - `password`: string (required)
 
+### Friends Endpoints
+
+#### 1. **DELETE** `/friends/friend_id`
+
 ### Group Chat Endpoints
 
 #### 1. **GET** `/groupchats`
