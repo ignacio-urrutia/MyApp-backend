@@ -20,7 +20,7 @@ class MultimediaResource(Resource):
         for file in files:
             file_name = f"{message_id}_{file.filename}"
             multimedia = Multimedia(type=file.content_type, message_id=message_id)
-            multimedia.file_url = multimedia.upload_file(file, file_name)
+            multimedia.file_url = multimedia.upload_file(file, multimedia.id)
             multimedia.filename = file_name
             print("File name: ", file_name)
             print(multimedia.serialize())
@@ -28,3 +28,17 @@ class MultimediaResource(Resource):
             db.session.add(multimedia)
         db.session.commit()
         return {"message": "Multimedia uploaded successfully"}, 201
+
+class MultimediaFile(Resource):
+    def get(self, file_id):
+        bucket_name = 'area-chat'
+        try:
+            file = s3.get_object(Bucket=bucket_name, Key=file_id)
+            return send_file(
+                BytesIO(file['Body'].read()),
+                mimetype=file['ContentType'],
+                as_attachment=True,
+                attachment_filename=filename
+            )
+        except Exception as e:
+            return {'message': str(e)}, 404

@@ -32,12 +32,12 @@ class Multimedia(db.Model):
             'filename': self.filename
         }
     
-    def upload_file(self, file, file_name):
+    def upload_file(self, file, file_id):
         try:
             s3.upload_fileobj(
                 file,
                 "area-chat",
-                file_name,
+                file_id,
                 ExtraArgs={
                     "ContentType": file.content_type
                 }

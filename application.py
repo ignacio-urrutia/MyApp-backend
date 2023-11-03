@@ -20,7 +20,7 @@ migrate = Migrate(application, db)
 from resources.UserResources import UserAll, UserById, UserByToken, UserLogIn, UserChatRooms, SignUp, FriendResource
 from resources.GroupChatResources import GroupChatAll, GroupChatById, GroupChatAddUser, GroupChatMessages, RecentMessagesResource, OlderMessagesResource
 from resources.MessageResources import MessageResource
-from resources.MultimediaResources import MultimediaResource
+from resources.MultimediaResources import MultimediaResource, MultimediaFile
 from resources.FriendRequestResources import FriendRequestResource
 
 # Routes
