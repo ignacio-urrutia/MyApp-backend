@@ -227,6 +227,6 @@ class FriendResource(Resource):
 
     @auth.login_required
     def get(self):
-        friend_list = [friend.serialize() for friend in g.user.friends]
+        friend_list = [friend.serialize(include_group_chats=False, include_friends=False) for friend in g.user.friends]
         return {"friends": friend_list}, 200
 
