@@ -17,7 +17,7 @@ class Message(db.Model):
             'timestamp': self.timestamp.isoformat(),  # Convert datetime to string
             'user_id': self.user_id,
             'group_chat_id': self.group_chat_id,
-            'multimedia': [item.serialize() for item in self.multimedia]
+            # 'multimedia': [item.serialize() for item in self.multimedia]
         }
 
 
