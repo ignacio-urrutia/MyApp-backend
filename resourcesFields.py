@@ -11,10 +11,6 @@ message_fields = {
 group_chat_fields = {
     "id": fields.Integer,
     "name": fields.String,
-    "north_boundary": fields.Float,
-    "south_boundary": fields.Float,
-    "east_boundary": fields.Float,
-    "west_boundary": fields.Float,
     "users": fields.List(fields.Nested(
         {
             "id": fields.Integer,
@@ -26,7 +22,10 @@ group_chat_fields = {
     )),
     "description": fields.String,
     "owner_id": fields.Integer,
-    "last_messages": fields.List(fields.Nested(message_fields))
+    "last_messages": fields.List(fields.Nested(message_fields)),
+    "latitude": fields.Float,
+    "longitude": fields.Float,
+    "radius": fields.Float
 }
 
 user_fields = {
@@ -44,7 +43,8 @@ user_fields = {
             "last_latitude": fields.Float,
             "last_longitude": fields.Float
         }
-    ))
+    )),
+    "profile_picture": fields.String
 }
 
 token_fields = {

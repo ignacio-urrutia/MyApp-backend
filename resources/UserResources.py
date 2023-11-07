@@ -6,6 +6,7 @@ from application import db
 from resourcesFields import user_fields, token_fields
 from models.GroupChatModel import GroupChat
 from models.UserModel import User
+from models.MultimediaModel import ProfilePicture
 
 auth = HTTPBasicAuth()
 
@@ -149,6 +150,19 @@ class UserByToken(Resource):
 
         return result, 204
     
+class UpdateProfilePicture(Resource):
+    @marshal_with(user_fields)
+    @auth.login_required
+    def post(self):
+        user = g.user
+        files = request.files.getlist("file")
+        for file in files:
+            filename = f"{user.id}_{file.filename}"
+            profile_picture = ProfilePicture.upload_file(user.id, file, filename)
+            user.profile_picture = profile_picture
+            db.session.commit()
+        return user.serialize(), 201
+
 @auth.verify_password
 def verify_password(username_or_token, password):
     # Attempt to extract the token from the Authorization header

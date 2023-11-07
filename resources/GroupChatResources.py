@@ -13,21 +13,19 @@ from resourcesFields import group_chat_fields, message_fields
 
 group_chat_post_args = reqparse.RequestParser()
 group_chat_post_args.add_argument("name", type=str, help="Name required", required=True)
-group_chat_post_args.add_argument("north_boundary", type=float, help="North boundary of the group chat required", required=True)
-group_chat_post_args.add_argument("south_boundary", type=float, help="South boundary of the group chat required", required=True)
-group_chat_post_args.add_argument("east_boundary", type=float, help="East boundary of the group chat required", required=True)
-group_chat_post_args.add_argument("west_boundary", type=float, help="West boundary of the group chat required", required=True)
 group_chat_post_args.add_argument("description", type=str, help="Description of the group chat required")
 group_chat_post_args.add_argument("owner_id", type=int, help="Owner id of the group chat required", required=True)
+group_chat_post_args.add_argument("latitude", type=float, help="Latitude of the group chat required", required=True)
+group_chat_post_args.add_argument("longitude", type=float, help="Longitude of the group chat required", required=True)
+group_chat_post_args.add_argument("radius", type=float, help="Radius of the group chat required", required=True)
 
 
 user_update_args = reqparse.RequestParser()
 user_update_args.add_argument("name", type=str, help="Name of the user")
-user_update_args.add_argument("north_boundary", type=float, help="North boundary of the group chat")
-user_update_args.add_argument("south_boundary", type=float, help="South boundary of the group chat")
-user_update_args.add_argument("east_boundary", type=float, help="East boundary of the group chat")
-user_update_args.add_argument("west_boundary", type=float, help="West boundary of the group chat")
 user_update_args.add_argument("description", type=str, help="Description of the group chat")
+user_update_args.add_argument("latitude", type=float, help="Latitude of the group chat")
+user_update_args.add_argument("longitude", type=float, help="Longitude of the group chat")
+user_update_args.add_argument("radius", type=float, help="Radius of the group chat")
 
 add_user_args = reqparse.RequestParser()
 add_user_args.add_argument("user_id", type=int, help="User id of the user to add to the group chat", required=True)
@@ -66,16 +64,8 @@ class GroupChatAll(Resource):
         if not owner:
             abort(404, message="Owner user does not exist")
 
-        north_boundary = args["north_boundary"]
-        south_boundary = args["south_boundary"]
-        east_boundary = args["east_boundary"]
-        west_boundary = args["west_boundary"]
 
-        if north_boundary <= south_boundary or east_boundary <= west_boundary:
-            abort(400, message="Invalid boundary values")
-
-
-        group_chat = GroupChat(name=args["name"], owner_id=args["owner_id"], north_boundary=north_boundary, south_boundary=south_boundary, east_boundary=east_boundary, west_boundary=west_boundary, description=args["description"])
+        group_chat = GroupChat(name=args["name"], owner_id=args["owner_id"], description=args["description"], latitude=args["latitude"], longitude=args["longitude"], radius=args["radius"])
 
         # group_chat.users.append(owner)
 
@@ -141,7 +131,7 @@ class GroupChatAddUser(Resource):
             db.session.rollback()
             abort(500, message="Internal Server Error")
 
-        return group_chat, 204
+        return group_chat.serialize(), 204
 
 class GroupChatMessages(Resource):
     @auth.login_required

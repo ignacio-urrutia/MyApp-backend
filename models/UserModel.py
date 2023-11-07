@@ -3,6 +3,7 @@ from application import application as app
 from werkzeug.security import generate_password_hash, check_password_hash
 import time
 import jwt
+from models.MultimediaModel import ProfilePicture
 
 usersGroupChats = db.Table("users_group_chats",
     db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
@@ -29,6 +30,7 @@ class User(db.Model):
         secondaryjoin=(friendships.c.friend_id == id),
         backref=db.backref("friend_of", lazy="dynamic"),
         lazy="dynamic")
+    profile_picture = db.relationship("ProfilePicture", uselist=False, backref="user", lazy=True)
 
     def hash_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -60,6 +62,7 @@ class User(db.Model):
             'last_latitude': self.last_latitude,
             'last_longitude': self.last_longitude,
             'group_chats': [group_chat.serialize() for group_chat in self.group_chats] if include_group_chats else None,
-            'friends': [friend.serialize(include_group_chats=False, include_friends=False) for friend in self.friends] if include_friends else None
+            'friends': [friend.serialize(include_group_chats=False, include_friends=False) for friend in self.friends] if include_friends else None,
+            'profile_picture': self.profile_picture.file_url if self.profile_picture else None
         }
 
