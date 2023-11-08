@@ -128,6 +128,8 @@ class UserByToken(Resource):
             result.last_longitude = args["last_longitude"]
         if args["password"]:
             result.hash_password(args["password"])
+        if args["battery_level"]:
+            result.battery_level = args["battery_level"]
 
         try:
             db.session.commit()

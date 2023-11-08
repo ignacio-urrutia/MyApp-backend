@@ -44,7 +44,8 @@ user_fields = {
             "last_longitude": fields.Float
         }
     )),
-    "profile_picture": fields.String
+    "profile_picture": fields.String,
+    "battery_level": fields.Integer
 }
 
 token_fields = {
