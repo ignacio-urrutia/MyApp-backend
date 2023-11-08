@@ -204,6 +204,6 @@ class OlderMessagesResource(Resource):
 def on_join(data):
     room = data['group_chat_id']
     join_room(room)
-    print(f'{g.user.username} has entered the room.')
+    print(f'Someone has entered the room.')
     # emit('status', {'msg': f'{g.user.username} has entered the room.'}, room=room)
 
