@@ -1,5 +1,6 @@
 import os
 import boto3
+from sqlalchemy import UniqueConstraint
 
 from application import db
 
@@ -59,6 +60,9 @@ class ProfilePicture(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     filename = db.Column(db.String, nullable=True)
 
+    # Add a unique constraint to user_id to ensure one profile picture per user
+    __table_args__ = (UniqueConstraint('user_id', name='unique_user_id'),)
+
     def serialize(self):
         return {
             'id': self.id,
@@ -68,23 +72,40 @@ class ProfilePicture(db.Model):
             'filename': self.filename
         }
     
+    @staticmethod
     def upload_file(user_id, file, filename):
-        profile_picture = ProfilePicture(type=file.content_type, user_id=user_id, filename=filename, file_url=f"profile_pictures/{user_id}")
-        db.session.add(profile_picture)
+        # Check if a profile picture already exists for the user
+        existing_profile_picture = ProfilePicture.query.filter_by(user_id=user_id).first()
+
+        if existing_profile_picture:
+            profile_picture = existing_profile_picture
+            # Update the existing record with new file data
+            profile_picture.type = file.content_type
+            profile_picture.filename = filename
+        else:
+            # If not, create a new profile picture record
+            profile_picture = ProfilePicture(type=file.content_type, user_id=user_id, filename=filename, file_url=f"profile_pictures/{user_id}")
+            db.session.add(profile_picture)
+        
         db.session.flush()
+
         try:
+            # Generate the file path using the profile picture's ID
+            file_path = f"profile_pictures/{user_id}"
+            
+            # Upload the file to S3
             s3.upload_fileobj(
                 file,
                 "area-chat",
-                f"profile_pictures/{user_id}/{profile_picture.id}",
+                file_path,
                 ExtraArgs={
                     "ContentType": file.content_type
                 }
             )
-            profile_picture.file_url = f"profile_pictures/{user_id}/{profile_picture.id}"
+            # Update the file_url after successful upload
+            profile_picture.file_url = file_path
             db.session.commit()
             return profile_picture
         except Exception as e:
             db.session.rollback()
             raise e
-        

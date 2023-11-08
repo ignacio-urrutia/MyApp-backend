@@ -17,7 +17,7 @@ db = SQLAlchemy(application)
 migrate = Migrate(application, db)
 
 
-from resources.UserResources import UserAll, UserById, UserByToken, UserLogIn, UserChatRooms, SignUp, FriendResource, UpdateProfilePicture, UpdateChatRooms
+from resources.UserResources import UserAll, UserById, UserByToken, UserLogIn, UserChatRooms, SignUp, FriendResource, UpdateProfilePicture, UpdateChatRooms, ProfilePicture
 from resources.GroupChatResources import GroupChatAll, GroupChatById, GroupChatAddUser, GroupChatMessages, RecentMessagesResource, OlderMessagesResource
 from resources.MessageResources import MessageResource
 from resources.MultimediaResources import MultimediaResource, MultimediaFile
@@ -32,8 +32,9 @@ api.add_resource(UserById, "/users/id/<int:user_id>")
 api.add_resource(UserLogIn, "/users/login")
 api.add_resource(UserChatRooms, "/users/chatrooms")
 api.add_resource(FriendResource, "/friends")
-api.add_resource(UpdateProfilePicture, "/users/profile-picture")
 api.add_resource(UpdateChatRooms, "/users/update-chatrooms")
+api.add_resource(UpdateProfilePicture, "/update-profile-picture")
+api.add_resource(ProfilePicture, "/profile-picture/<int:user_id>")
 
 # Friend requests
 api.add_resource(FriendRequestResource, "/friend_requests")

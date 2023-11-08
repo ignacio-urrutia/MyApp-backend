@@ -1,12 +1,13 @@
 from flask_restful import Api, Resource, reqparse, abort, marshal_with
-from flask import g, request
+from flask import g, request, send_file
 from flask_httpauth import HTTPBasicAuth
+from io import BytesIO
 
 from application import db
 from resourcesFields import user_fields, token_fields
 from models.GroupChatModel import GroupChat
 from models.UserModel import User
-from models.MultimediaModel import ProfilePicture
+from models.MultimediaModel import ProfilePicture, s3
 
 auth = HTTPBasicAuth()
 
@@ -162,6 +163,29 @@ class UpdateProfilePicture(Resource):
             user.profile_picture = profile_picture
             db.session.commit()
         return user.serialize(), 201
+    
+class ProfilePicture(Resource):
+    @auth.login_required
+    def get(self, user_id):
+        user = User.query.filter_by(id=user_id).first()
+        if not user:
+            abort(404, message="Could not find user with that id...")
+        # Check if the users are friends
+        # if user not in g.user.friends:
+        #     abort(403, message="User does not have a profile picture...")
+        if not user.profile_picture:
+            abort(404, message="User does not have a profile picture...")
+        bucket_name = 'area-chat'
+        try:
+            file = s3.get_object(Bucket=bucket_name, Key=user.profile_picture.file_url)
+            return send_file(
+                BytesIO(file['Body'].read()),
+                mimetype=file['ContentType'],
+                as_attachment=True,
+                download_name=user.profile_picture.filename
+            )
+        except Exception as e:
+            return {'message': str(e)}, 404
 
 @auth.verify_password
 def verify_password(username_or_token, password):
