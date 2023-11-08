@@ -7,7 +7,8 @@ from application import db
 from resourcesFields import user_fields, token_fields
 from models.GroupChatModel import GroupChat
 from models.UserModel import User
-from models.MultimediaModel import ProfilePicture, s3
+from models.MultimediaModel import ProfilePicture
+from models.MultimediaModel import s3
 
 auth = HTTPBasicAuth()
 

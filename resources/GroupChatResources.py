@@ -158,7 +158,7 @@ class GroupChatMessages(Resource):
         db.session.commit()
 
          # Emit the message to all connected clients in this group chat room
-        emit('new_message', {'message': message.serialize()}, room=group_chat_id)
+        emit('new_message', {'message': message.serialize()}, room=group_chat_id, namespace='/chat')
         return message, 201  # 201 status code signifies that a new resource has been created
     
 class RecentMessagesResource(Resource):

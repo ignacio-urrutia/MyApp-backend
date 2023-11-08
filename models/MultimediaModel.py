@@ -61,7 +61,7 @@ class ProfilePicture(db.Model):
     filename = db.Column(db.String, nullable=True)
 
     # Add a unique constraint to user_id to ensure one profile picture per user
-    __table_args__ = (UniqueConstraint('user_id', name='unique_user_id'),)
+    # __table_args__ = (UniqueConstraint('user_id', name='unique_user_id'),)
 
     def serialize(self):
         return {
