@@ -157,6 +157,8 @@ class UpdateProfilePicture(Resource):
     def post(self):
         user = g.user
         files = request.files.getlist("file")
+        if not files or len(files) == 0:
+            abort(400, message="No files were uploaded...")
         for file in files:
             filename = f"{user.id}_{file.filename}"
             profile_picture = ProfilePicture.upload_file(user.id, file, filename)
