@@ -167,7 +167,7 @@ class UpdateProfilePicture(Resource):
             db.session.commit()
         return user.serialize(), 201
     
-class ProfilePicture(Resource):
+class ProfilePictureResource(Resource):
     @auth.login_required
     def get(self, user_id):
         user = User.query.filter_by(id=user_id).first()
