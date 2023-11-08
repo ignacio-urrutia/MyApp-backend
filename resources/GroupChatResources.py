@@ -3,11 +3,13 @@ from functools import wraps
 from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with, request
 from flask import g
 from flask_httpauth import HTTPBasicAuth
+from flask_socketio import emit, join_room
+
 from models.GroupChatModel import GroupChat
 from models.UserModel import User
 from models.MessageModel import Message
 from models.MultimediaModel import Multimedia
-from application import db
+from application import db, socketio
 from .UserResources import auth
 from resourcesFields import group_chat_fields, message_fields
 
@@ -154,6 +156,9 @@ class GroupChatMessages(Resource):
             db.session.add(multimedia)
         
         db.session.commit()
+
+         # Emit the message to all connected clients in this group chat room
+        emit('new_message', {'message': message.serialize()}, room=group_chat_id)
         return message, 201  # 201 status code signifies that a new resource has been created
     
 class RecentMessagesResource(Resource):
@@ -193,3 +198,10 @@ class OlderMessagesResource(Resource):
             response.append(message_data)
             
         return response, 200
+    
+@socketio.on('join')
+def on_join(data):
+    room = data['group_chat_id']
+    join_room(room)
+    # emit('status', {'msg': f'{g.user.username} has entered the room.'}, room=room)
+

@@ -3,10 +3,12 @@ from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS, cross_origin
+from flask_socketio import SocketIO
 from flask_httpauth import HTTPBasicAuth
 
 
 application = Flask(__name__)
+socketio = SocketIO(application, cors_allowed_origins="*")
 cors = CORS(application, resources={r"/*": {"origins": "*", "supports_credentials": True}})
 
 # app.config['CORS_HEADERS'] = 'Content-Type'
@@ -56,4 +58,4 @@ api.add_resource(MultimediaFile, '/multimedia/<string:file_id>')
 
 
 if __name__ == '__main__':
-    application.run(host = '0.0.0.0', debug=True)
+    socketio.run(application, host = '0.0.0.0', debug=True)
