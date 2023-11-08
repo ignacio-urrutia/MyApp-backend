@@ -159,6 +159,7 @@ class GroupChatMessages(Resource):
 
          # Emit the message to all connected clients in this group chat room
         emit('new_message', {'message': message.serialize()}, room=group_chat_id, namespace='/chat')
+        print(f"Message emitted to room {group_chat_id}")
         return message, 201  # 201 status code signifies that a new resource has been created
     
 class RecentMessagesResource(Resource):
@@ -203,5 +204,6 @@ class OlderMessagesResource(Resource):
 def on_join(data):
     room = data['group_chat_id']
     join_room(room)
+    print(f'{g.user.username} has entered the room.')
     # emit('status', {'msg': f'{g.user.username} has entered the room.'}, room=room)
 
