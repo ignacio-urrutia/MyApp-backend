@@ -244,3 +244,9 @@ class FriendResource(Resource):
         friend_list = [friend.serialize(include_group_chats=False, include_friends=False) for friend in g.user.friends]
         return {"friends": friend_list}, 200
 
+class UpdateChatRooms(Resource):
+    @auth.login_required
+    def get(self):
+        g.user.update_chatrooms()
+        # Return the serialized version of the group chats
+        return [group_chat.serialize() for group_chat in g.user.group_chats], 200
