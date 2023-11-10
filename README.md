@@ -1,173 +1,121 @@
-# MyApp
+# ChatterMap
+This is the backend of the ChatterMap App. It provides a REST API for the frontend to consume. The instance is running a Flask server that is connected to a MySQL database. Also, the backend is connected to a S3 bucket to store multimedia files, mainly profile pictures.
+
+The code is running in a EC2 instance in AWS in the following address: http://18.222.120.14:5000
+
+
 ## Setup
-1. Install poetry:
-```bash
-curl -sSL https://install.python-poetry.org | python3 -
-```
-https://python-poetry.org/docs/
+To setup the backend in local, follow the instructions in the [Setup.md](Setup.md) file.
 
-Remember to add poetry to your path
-
-2. Install dependencies:
-```bash
-poetry install
-```
-
-3. Run the server:
-```bash
-poetry run flask run
-```
-If you want to run the server in debug mode, run:
-```bash
-poetry run flask run --debug
-```
-
-4. Initialize the database:
-First time you run the server, you need to initialize the database. To do that, run:
-```bash
-poetry run flask shell
-```
-```python
->>> db.create_all()
-```
-
-If you want to drop all tables, run:
-```bash
-poetry run flask shell
-```
-```python
->>> db.drop_all()
-```
-
-5. Populate the database:
-To populate the database, run:
-```bash
-poetry run python populate_db.py
-```
-
-This file can be modified to change the data that will be inserted in the database.
-
-Also, you can send requests to the server to populate the database manually.
 
 ## Endpoints
 
-### User Endpoints
+### Users
 
-#### 1. **GET** `/users`
-
-- Returns a list of all users.
+#### 1. **GET** `/all-users`
+- Returns a list of all users. (For testing purposes only)
   
-#### 2. **POST** `/users`
-
+#### 2. **POST** `/signup`
 - Creates a new user.
 - **Body Parameters:**
   - `name`: string (required)
   - `email`: string (required)
   - `password`: string (required)
-  - `last_latitude`: float (optional)
-  - `last_longitude`: float (optional)
 
-#### 3. **GET** `/users/<int:user_id>`
-
-- Retrieves information about a specific user by user ID.
-  
-#### 4. **PATCH** `/users/<int:user_id>`
-
-- Updates information for a specific user by user ID.
-- **Body Parameters:**
-  - `name`: string (optional)
-  - `email`: string (optional)
-  - `last_latitude`: float (optional)
-  - `last_longitude`: float (optional)
-
-#### 5. **DELETE** `/users/<int:user_id>`
-
-- Deletes a specific user by user ID.
-
-#### 6. **POST** `/users/login`
-
+#### 3. **POST** `/users/login`
 - Logs in a user.
 - **Body Parameters:**
   - `email`: string (required)
   - `password`: string (required)
 
-### Friends Endpoints
+#### 4. **GET** `/users`
+- Gets information about the current user. (Requires authentication)
 
-#### 1. **DELETE** `/friends/friend_id`
+#### 5. **PATCH** `/users`
+- Updates information for the current user. (Requires authentication)
+- **Body Parameters:**
+  - `name`: string (optional)
+  - `email`: string (optional)
+  - `password`: string (optional)
+  - `last_latitude`: float (optional)
+  - `last_longitude`: float (optional)
+  - `battery_level`: float (optional)
 
-### Group Chat Endpoints
+#### 6. **DELETE** `/users`
+- Deletes the current user. (Requires authentication)
 
-#### 1. **GET** `/groupchats`
+#### 7. **GET** `/users/chatrooms`
+- Gets a list of all chatrooms the current user is in. (Requires authentication)
 
-- Returns a list of all group chats.
+#### 8. **GET** `/friends`
+- Gets a list of all friends of the current user. (Requires authentication)
+
+#### 8. **DELETE** `/friends`
+- Deletes a friend of the current user and removes the current user from the friend's friend list. (Requires authentication)
+- **Body Parameters:**
+  - `friend_id`: integer (required)
+
+#### 9. **GET** `/users/update-chatrooms`
+- Sends signal to update chatrooms of the current user based on their location. (Requires authentication)
+- Returns a list of chatrooms available to the user.
+
+#### 10. **GET** `/profile-picture/<int:user_id>`
+- Retrieves the profile picture of a specific user by user ID. 
+
+#### 11. **POST** `/update-profile-picture`
+- Updates the profile picture of the current user. (Requires authentication)
+- **Body Parameters:**
+  - `file`: new profile picture (required)
+
   
-#### 2. **POST** `/groupchats`
+### Friend Requests
 
-- Creates a new group chat.
-- **Body Parameters:**
-  - `name`: string (required)
-  - `north_boundary`: float (required)
-  - `south_boundary`: float (required)
-  - `east_boundary`: float (required)
-  - `west_boundary`: float (required)
-  - `description`: string (optional)
-  - `owner_id`: integer (required)
+#### 1. **GET** `/friend-requests`
+- Gets a list of all friend requests of the current user. (Requires authentication)
 
-#### 3. **GET** `/groupchats/<int:group_chat_id>`
-
-- Retrieves information about a specific group chat by group chat ID.
-
-#### 4. **PATCH** `/groupchats/<int:group_chat_id>/adduser`
-
-- Adds a user to a specific group chat by group chat ID.
-- **Body Parameters:**
-  - `user_id`: integer (required)
-
-#### 5. **POST** `/groupchats/<int:group_chat_id>/messages`
-- Posts a new message to a specific group chat by group chat ID.
-- **Body Parameters:**
-  - `content`: string (required)
-  - `user_id`: integer (required)
-  - `multimedia`: array of objects (optional, each object should have `type` and `file_url` fields)
-
-#### 6. **GET** `/groupchats/<int:group_chat_id>/recent-messages`
-- Retrieves the 20 most recent messages from a specific group chat by group chat ID.
-
-#### 7. **GET** `/groupchats/<int:group_chat_id>/older-messages/<int:earliest_message_id>`
-- Retrieves up to 20 messages older than a specified message ID from a specific group chat by group chat ID.
-
-### Multimedia Endpoints
-
-#### 1. **GET** `/messages/<int:message_id>/multimedia`
-- Retrieves multimedia items associated with a specific message by message ID.
-
-### Friend Request Endpoints
-
-#### 1. **POST** `/friend_requests`
-
-- Sends a new friend request.
+#### 2. **POST** `/friend-requests`
+- Sends a friend request to a user. (Requires authentication)
 - **Body Parameters:**
   - `receiver_id`: integer (required)
 
-#### 2. **PUT** `/friend_requests`
-
-- Updates the status of a received friend request.
+#### 3. **PUT** `/friend-requests`
+- Accepts or rejects a friend request. (Requires authentication)
 - **Body Parameters:**
   - `request_id`: integer (required)
-  - `status`: string (required, either 'accepted' or 'declined')
+  - `status`: string (required) (must be either "accepted" or "declined")
 
-#### 3. **GET** `/friend_requests`
+### Group Chats (Chatrooms)
 
-- Retrieves a list of all pending friend requests where the user is the receiver.
+#### 1. **GET** `/groupchats/`
+- Gets a list of all group chats. (For testing purposes only)
 
+#### 2. **POST** `/groupchats/`
 
+- Creates a new group chat. 
+- **Body Parameters:**
+  - `name`: string (required)
+  - `owner_id`: integer (required)
+  - `description`: string (required)
+  - `latitude`: float (required)
+  - `longitude`: float (required)
+  - `radius`: float (required)
 
-## How it will work
-1. User send its location
-2. Server checks all groups where the user bellong and if the user is inside the group's area, return the information about the group
+#### 3. **GET** `/groupchats/<int:chatroom_id>`
+- Gets information about a specific group chat.
 
-## Connect to the EC2 instance
-1. Connect to the instance:
-```bash
-ssh -i BackendKeys/area-chat-keys.pem ec2-user@ec2-3-138-178-239.us-east-2.compute.amazonaws.com
-``` 
+#### 4. **PATCH** `/groupchats/<int:chatroom_id>/adduser`
+- Adds a user to a specific group chat. (Requires authentication)
+- **Body Parameters:**
+  - `user_id`: integer (required)
+
+#### 5. **POST** `/groupchats/<int:chatroom_id>/messages`
+- Sends a message to a specific group chat. (Requires authentication)
+- **Body Parameters:**
+  - `user_id`: integer (required, must be the same as the current user)
+  - `content`: string (required)
+
+#### 6. **GET** `/groupchats/<int:chatroom_id>/recent-messages`
+- Gets the 20 most recent messages of a specific group chat. (Requires authentication)
+
+#### 7. **GET** `/groupchats/<int:chatroom_id>/older-messages/<int:oldest_message_id>`
+- Gets the 20 messages older than a specific message of a specific group chat. (Requires authentication)
